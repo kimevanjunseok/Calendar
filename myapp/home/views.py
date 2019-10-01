@@ -1,26 +1,27 @@
-from django.shortcuts import render
-import datetime
+from django.shortcuts import render, redirect
+from .models import Calendar
 
 # Create your views here.
 
 def index(request):
-    # weeks = {   "Sun": 0,
-    #             "Mon": 1,
-    #             "Tus": 2,
-    #             "Wed": 3,
-    #             "Thu": 4,
-    #             "Fri": 5,
-    #             "Sat": 7
-    #         }
-    # info = datetime
-    # today = info.date.today()
-    # year, month, day = map(int, str(today).split('-'))
-    # week = weeks[info.date(year, month, 1).strftime("%A")[:3]]
+    calendars = Calendar.objects.all()
+    context = {
+        'calendars': calendars,
+    } 
+    return render(request, 'index.html', context)
 
-    # context = {
-    #     "year": year,
-    #     "month": month,
-    #     "day" : day,
-    #     "week": week,
-    # }
-    return render(request, 'index.html', {})
+def create(request):
+    if request.method == "POST":
+        title = request.POST.get('title')
+        content = request.POST.get('content')
+        start_day = request.POST.get('start_day')
+        end_day = request.POST.get('end_day')
+        start_time = request.POST.get('start_time')
+        end_time = request.POST.get('end_time')
+
+        calendars = Calendar(title=title, content=content, start_day=start_day, end_day=end_day, start_time=start_time, end_time=end_time)
+
+        calendars.save()
+
+      
+    return redirect('home:index')

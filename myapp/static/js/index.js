@@ -1,10 +1,3 @@
-
-// const today = new Date();
-// const start = new Date(today.getFullYear(), today.getMonth(), 1)
-// const week = ['일', '월', '화', '수', '목', '금', '토'];
-// document.getElementById("current").innerHTML = today.getFullYear() + "년" + " " + (today.getMonth()+1) + "월" + week[today.getDay()] + week[start.getDay()];
-
-
 $(document).ready(function() {
     var currentDate = new Date();
     function generateCalendar(d) {
@@ -28,17 +21,16 @@ $(document).ready(function() {
         };
         var start = new Date(d.getFullYear(), d.getMonth()).getDay();
 
-        var copycurrent = new Date(currentDate.getFullYear(), currentDate.getMonth(), 0);
-        var restday = copycurrent.getDate() - copycurrent.getDay()
+        var copycurrent1 = new Date(currentDate.getFullYear(), currentDate.getMonth(), 0);
+        var copycurrent2 = new Date(currentDate.getFullYear(), currentDate.getMonth()+1);
+        var restday = copycurrent1.getDate() - copycurrent1.getDay()
 
         var cal = [];
         var day = 1;
 
         var cnt = 1;
-        var comp = 0;
 
         for (var i = 0; i <= 6; i++) {
-            comp = i
             if (i == 0) {
                 cal.push(['<div class="week-day">']);
             } else {
@@ -48,12 +40,12 @@ $(document).ready(function() {
                 if (i === 0) {
                     cal[i].push('<div class="day-name">' + details.weekDays[j] + '</div>');
                 } else if (day > details.totalDays) {
-                    cal[i].push('<div class="day"><h3 class="day-label">' + cnt++ + '</h3></div>');
+                    cal[i].push(`<div class="day"><h3 id="${copycurrent2.getMonth()+1 + '/' + cnt + '/' + copycurrent2.getFullYear()}" class="day-label">` + cnt++ + '</h3></div>');
                 } else {
                     if (i === 1 && j < start) {
-                        cal[i].push('<div class="day"><h3 class="day-label">' + restday++ + '</h3></div>');
+                        cal[i].push(`<div class="day"><h3 id="${copycurrent1.getMonth()+1 + '/' + restday + '/' + copycurrent1.getFullYear()}" class="day-label">` + restday++ + '</h3></div>');
                     } else {
-                        cal[i].push('<div class="day"><h3 class="day-label">' + day++ + '</h3></div>');
+                        cal[i].push(`<div class="day"><h3 id="${d.getMonth()+1 + '/' + day + '/' + d.getFullYear()}" class="day-label">` + day++ + '</h3></div>');
                     }
                 }
             }
@@ -77,26 +69,21 @@ $(document).ready(function() {
         });
     }
 
+    $('#todaymove').click(function() {
+        $('#div-list').text('');
+        var newcurrentDate = new Date()
+        generateCalendar(newcurrentDate);
+    });
 
     $('#left').click(function() {
         $('#div-list').text('');
-        if (currentDate.getMonth() === 0) {
-            currentDate = new Date(currentDate.getFullYear() - 1, 11);
-            generateCalendar(currentDate);
-        } else {
-            currentDate = new Date(currentDate.getFullYear(), currentDate.getMonth() - 1)
-            generateCalendar(currentDate);
-        }
+        currentDate = new Date(currentDate.getFullYear(), currentDate.getMonth() - 1)
+        generateCalendar(currentDate);
     });
     $('#right').click(function() {
         $('#div-list').text('');
-        if (currentDate.getMonth() === 11) {
-            currentDate = new Date(currentDate.getFullYear() + 1, 0);
-            generateCalendar(currentDate);
-        } else {
-            currentDate = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1)
-            generateCalendar(currentDate);
-        }
+        currentDate = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1)
+        generateCalendar(currentDate);
     });
     generateCalendar(currentDate);
 });
@@ -113,7 +100,7 @@ $(function () {
     $('[data-toggle="popover"]').popover().on('inserted.bs.popover')
 });
 
-$('#table, .daily-calendar').click(function() {
+$('#div-list, .daily-calendar').click(function() {
     $('#registerSchedule').modal('show');
 });
 

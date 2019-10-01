@@ -15,7 +15,7 @@
 <body>
     <div class="calendar-container" style="margin-top: 0px;">
         <div class="calendar-header">
-            <button class="btn btn-light">Today</button>
+            <button id="todaymove" class="btn btn-light">Today</button>
             <div class="ico-arrow">
                 <a id="left" href="#" data-toggle="tooltip" data-placement="top" title="이전">
                     <i class="material-icons">
@@ -50,6 +50,34 @@
                     <div id="div-list"></div>
                 </div>
             </div>
+            <div class="tab-pane" id="day" role="tabpanel" aria-labelledby="tab-day">
+                <div class="daily-calendar"><span class="day-name">3일 화요일</span>
+                    <div class="event-consecutive event-start event-end" data-toggle="popover"
+                            data-html="true" data-placement="left" data-content='<div class="content-line"><div class="event-consecutive-marking"></div><div class="title"><h5>일정 1</h5><h7 class="reservation">2019년 9월 15일 – 17일</div>
+            </div><div class="content-line"><i class="material-icons">
+    notes
+    </i><div class="title"><h7 class="reservation">스케쥴 메모, 설명이 나타납니다.</div>'>연속 일정 1
+                    </div>
+                    <div class="event-consecutive event-start event-end" data-toggle="popover"
+                            data-html="true" data-placement="left" data-content='<div class="content-line"><div class="event-consecutive-marking"></div><div class="title"><h5>일정 1</h5><h7 class="reservation">2019년 9월 15일 – 17일</div>
+            </div><div class="content-line"><i class="material-icons">
+    notes
+    </i><div class="title"><h7 class="reservation">스케쥴 메모, 설명이 나타납니다.</div>'>연속 일정 2
+                    </div>
+                    <div class="event event-start event-end" data-toggle="popover"
+                            data-html="true" data-placement="left" data-content='<div class="content-line"><div class="event-marking"></div><div class="title"><h5>일정 1</h5><h7 class="reservation">2019년 9월 15일 – 17일<span class="reservation-time">⋅오후 2:00~ 3:00</span></div>
+            </div><div class="content-line"><i class="material-icons">
+    notes
+    </i><div class="title"><h7 class="reservation">스케쥴 메모, 설명이 나타납니다.</div>'>일반 일정 3
+                    </div>
+                    <div class="event-repeated event-start event-end" data-toggle="popover"
+                            data-html="true" data-placement="left" data-content='<div class="content-line"><div class="event-repeated-marking"></div><div class="title"><h5>일정 1</h5><h7 class="reservation">2019년 9월 15일 – 17일<span class="reservation-time">⋅오후 2:00~ 3:00</span><span class="repeat-message">⋅매월 반복</span></div>
+            </div><div class="content-line"><i class="material-icons">
+    notes
+    </i><div class="title"><h7 class="reservation">스케쥴 메모, 설명이 나타납니다.</div>'>반복 일정 1
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -74,21 +102,22 @@
                 </button>
             </div>
             <div class="modal-body">
-                <form>
+                <form action="{% url 'home:create' %}" method="POST">
+                    {% csrf_token %}
                     <div class="form-group">
                         <label class="col-form-label">일정 제목</label>
-                        <input type="text" class="form-control" id="recipient-name">
+                        <input type="text" name="title" class="form-control" id="recipient-name">
                     </div>
                     <div class="form-group">
                         <label for="message-text" class="col-form-label">일정 설명</label>
-                        <textarea class="form-control" id="message-text"></textarea>
+                        <textarea class="form-control" name="content" id="message-text"></textarea>
                     </div>
                     <div class="form-row">
                         <div class="col-md-6">
                             <div class="form-group">
                                 <label class="col-form-label">일정 시작 날짜</label>
                                 <div class="input-group date" id="datetimepicker1" data-target-input="nearest">
-                                    <input type="text" class="form-control datetimepicker-input"
+                                    <input type="text" name="start_day" class="form-control datetimepicker-input"
                                             data-target="#datetimepicker1"/>
                                     <div class="input-group-append" data-target="#datetimepicker1"
                                             data-toggle="datetimepicker">
@@ -103,7 +132,7 @@
                             <div class="form-group">
                                 <label class="col-form-label">일정 시작 시간</label>
                                 <div class="input-group date" id="datetimepicker2" data-target-input="nearest">
-                                    <input type="text" class="form-control datetimepicker-input"
+                                    <input type="text" name="start_time" class="form-control datetimepicker-input"
                                             data-target="#datetimepicker2"/>
                                     <div class="input-group-append" data-target="#datetimepicker2"
                                             data-toggle="datetimepicker">
@@ -120,7 +149,7 @@
                             <div class="form-group">
                                 <label class="col-form-label">일정 종료 날짜</label>
                                 <div class="input-group date" id="datetimepicker3" data-target-input="nearest">
-                                    <input type="text" class="form-control datetimepicker-input"
+                                    <input type="text" name="end_day" class="form-control datetimepicker-input"
                                             data-target="#datetimepicker3"/>
                                     <div class="input-group-append" data-target="#datetimepicker3"
                                             data-toggle="datetimepicker">
@@ -135,7 +164,7 @@
                             <div class="form-group">
                                 <label class="col-form-label">일정 종료 시간</label>
                                 <div class="input-group date" id="datetimepicker4" data-target-input="nearest">
-                                    <input type="text" class="form-control datetimepicker-input"
+                                    <input type="text" name="end_time" class="form-control datetimepicker-input"
                                             data-target="#datetimepicker4"/>
                                     <div class="input-group-append" data-target="#datetimepicker4"
                                             data-toggle="datetimepicker">
@@ -155,11 +184,11 @@
                             <label class="form-check-label" for="inlineCheckbox2">하루 종일</label>
                         </div>
                     </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">취소</button>
+                        <input type="submit" value="일정 만들기" class="btn btn-primary">
+                    </div>
                 </form>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">취소</button>
-                <button type="button" class="btn btn-primary">일정 만들기</button>
             </div>
         </div>
     </div>
