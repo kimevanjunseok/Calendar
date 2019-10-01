@@ -35,8 +35,10 @@ $(document).ready(function() {
         var day = 1;
 
         var cnt = 1;
+        var comp = 0;
 
         for (var i = 0; i <= 6; i++) {
+            comp = i
             if (i == 0) {
                 cal.push(['<div class="week-day">']);
             } else {
@@ -64,7 +66,8 @@ $(document).ready(function() {
         cal = cal.reduce(function(a, b) {
             return a.concat(b);
         }, []).join('');
-        $('#table').append(cal);
+        
+        $('#div-list').append(cal);
         $('#months').text(details.months[d.getMonth()]);
         $('#year').text(d.getFullYear());
         $('td.day').mouseover(function() {
@@ -74,8 +77,9 @@ $(document).ready(function() {
         });
     }
 
+
     $('#left').click(function() {
-        $('#table').text('');
+        $('#div-list').text('');
         if (currentDate.getMonth() === 0) {
             currentDate = new Date(currentDate.getFullYear() - 1, 11);
             generateCalendar(currentDate);
@@ -85,7 +89,7 @@ $(document).ready(function() {
         }
     });
     $('#right').click(function() {
-        $('#table').text('');
+        $('#div-list').text('');
         if (currentDate.getMonth() === 11) {
             currentDate = new Date(currentDate.getFullYear() + 1, 0);
             generateCalendar(currentDate);
@@ -109,7 +113,7 @@ $(function () {
     $('[data-toggle="popover"]').popover().on('inserted.bs.popover')
 });
 
-$('.week, .daily-calendar').click(function() {
+$('#table, .daily-calendar').click(function() {
     $('#registerSchedule').modal('show');
 });
 
