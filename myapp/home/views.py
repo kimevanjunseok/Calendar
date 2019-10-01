@@ -1,4 +1,7 @@
 from django.shortcuts import render, redirect
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
+from .serializers import CalendarSerializer
 from .models import Calendar
 
 # Create your views here.
@@ -25,3 +28,9 @@ def create(request):
 
       
     return redirect('home:index')
+
+@api_view(['GET'])
+def calendar_list(request):
+    calendar = Calendar.objects.all()
+    serializer = CalendarSerializer(calendar, many=True)
+    return Response(serializer.data)

@@ -30,6 +30,11 @@ $(document).ready(function() {
 
         var cnt = 1;
 
+        axios.get('api/v1/calendar_list/')
+        .then(res => {
+            console.log(res.data)
+        })
+
         for (var i = 0; i <= 6; i++) {
             if (i == 0) {
                 cal.push(['<div class="week-day">']);
