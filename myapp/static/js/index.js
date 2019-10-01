@@ -23,33 +23,48 @@ $(document).ready(function() {
         var details = {
             // totalDays: monthDays(d.getMonth(), d.getFullYear()),
             totalDays: d.monthDays(),
-            weekDays: ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
+            weekDays: ['일', '월', '화', '수', '목', '금', '토'],
             months: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12'],
         };
         var start = new Date(d.getFullYear(), d.getMonth()).getDay();
+
+        var copycurrent = new Date(currentDate.getFullYear(), currentDate.getMonth(), 0);
+        var restday = copycurrent.getDate() - copycurrent.getDay()
+
         var cal = [];
         var day = 1;
+
+        var cnt = 1;
+
         for (var i = 0; i <= 6; i++) {
-            cal.push(['<tr>']);
+            if (i == 0) {
+                cal.push(['<div class="week-day">']);
+            } else {
+                cal.push(['<div class="week">']);
+            }
             for (var j = 0; j < 7; j++) {
                 if (i === 0) {
                     cal[i].push('<div class="day-name">' + details.weekDays[j] + '</div>');
                 } else if (day > details.totalDays) {
-                    cal[i].push('<td>&nbsp;</td>');
+                    cal[i].push('<div class="day"><h3 class="day-label">' + cnt++ + '</h3></div>');
                 } else {
                     if (i === 1 && j < start) {
-                        cal[i].push('<td>&nbsp;</td>');
+                        cal[i].push('<div class="day"><h3 class="day-label">' + restday++ + '</h3></div>');
                     } else {
-                        cal[i].push('<td class="day">' + day++ + '</td>');
+                        cal[i].push('<div class="day"><h3 class="day-label">' + day++ + '</h3></div>');
                     }
                 }
             }
-            cal[i].push('</tr>');
+            cal[i].push('</div>');
+
+            if (day > details.totalDays) {
+                break;
+            }
         }
         cal = cal.reduce(function(a, b) {
             return a.concat(b);
         }, []).join('');
-        $('table').append(cal);
+        $('#table').append(cal);
         $('#months').text(details.months[d.getMonth()]);
         $('#year').text(d.getFullYear());
         $('td.day').mouseover(function() {
@@ -60,7 +75,7 @@ $(document).ready(function() {
     }
 
     $('#left').click(function() {
-        $('table').text('');
+        $('#table').text('');
         if (currentDate.getMonth() === 0) {
             currentDate = new Date(currentDate.getFullYear() - 1, 11);
             generateCalendar(currentDate);
@@ -70,7 +85,7 @@ $(document).ready(function() {
         }
     });
     $('#right').click(function() {
-        $('table').html('<tr></tr>');
+        $('#table').text('');
         if (currentDate.getMonth() === 11) {
             currentDate = new Date(currentDate.getFullYear() + 1, 0);
             generateCalendar(currentDate);
