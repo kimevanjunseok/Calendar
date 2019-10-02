@@ -1,7 +1,7 @@
 $(document).ready(function() {
     var currentDate = new Date();
-    var d_startdate = {}
     async function generateCalendar(d) {
+        var d_startdate = {}
         await axios.get('api/v1/calendar_list/')
         .then(res => {
             res.data.forEach(data => {
@@ -12,11 +12,15 @@ $(document).ready(function() {
                 const diff_date1 = new Date(start_d[2], start_d[0]-1, start_d[1])
                 const diff_date2 = new Date(end_d[2], end_d[0]-1, end_d[1])
                 const diff = Math.floor((diff_date2.getTime() - diff_date1.getTime()) / 1000 / 60 / 60 / 24)
+
+                if (data.start_day in d_startdate) {
+                    d_startdate[data.start_day].push([diff+1, data.title, diff_date1.getDay()])
+                } else [
+                    d_startdate[data.start_day] = [[diff+1, data.title, diff_date1.getDay()]]
+                ]
     
-                d_startdate[data.start_day] = [diff+1, data.title, diff_date1.getDay()]
             })
         })
-
         // function monthDays(month, year) {
         //     var result = [];
         //     var days = new Date(year, month, 0).getDate();
@@ -109,11 +113,36 @@ $(document).ready(function() {
         var day_cal = ['7', '6', '5', '4', '3', '2', '1']
         for (var i in date_list) {
             if (date_list[i] in d_startdate) {
-                if (d_startdate[date_list[i]][0]  > day_cal[d_startdate[date_list[i]][2]]) {
-                    $(`#${date_list[i]}`).after(`<div class="event event-start event-end" data-span="${day_cal[d_startdate[date_list[i]][2]]}" data-toggle="popover" data-html="true">${d_startdate[date_list[i]][1]}</div>`);
-                } else {
-                    $(`#${date_list[i]}`).after(`<div class="event event-start event-end" data-span="${d_startdate[date_list[i]][0]}" data-toggle="popover" data-html="true">${d_startdate[date_list[i]][1]}</div>`);
-                }
+                d_startdate[date_list[i]].forEach(res => {
+                    if (Number(res[0]) > Number(day_cal[res[2]])) {
+                        $(`#${date_list[i]}`).after(`<div class="event event-start event-end" data-span="${day_cal[res[2]]}" data-toggle="popover" data-html="true">${res[1]}</div>`);
+                        var share = date_list[i].split('-')
+                        var new_date = new Date(share[2], share[0]-1, Number(share[1]) + Number(day_cal[res[2]]))
+                        if (new_date.getMonth() + 1 < 10) {
+                            if (new_date.getDate() < 10) {
+                                var s_new_date = '0' + '' + (new_date.getMonth() + 1) + '-' + '0' + new_date.getDate() + '-' + new_date.getFullYear()
+                            } else {
+                                var s_new_date = '0' + '' + (new_date.getMonth() + 1) + '-' + new_date.getDate() + '-' + new_date.getFullYear()
+                            }
+                        } else {
+                            if (new_date.getDate() < 10) {
+                                var s_new_date = (new_date.getMonth() + 1) + '-' + '0' + new_date.getDate() + '-' + new_date.getFullYear()
+                            } else {
+                                var s_new_date = (new_date.getMonth() + 1) + '-' + new_date.getDate() + '-' + new_date.getFullYear()
+                            }
+    
+                        }
+
+                        if (s_new_date in d_startdate) {
+                            d_startdate[s_new_date].push([Number(res[0]) - Number(day_cal[res[2]]), res[1], 0])
+                        } else {
+                            d_startdate[s_new_date] = [[Number(res[0]) - Number(day_cal[res[2]]), res[1], 0]]
+                        }
+
+                    } else {
+                        $(`#${date_list[i]}`).after(`<div class="event event-start event-end" data-span="${res[0]}" data-toggle="popover" data-html="true">${res[1]}</div>`);
+                    }
+                })
 
             }
 
