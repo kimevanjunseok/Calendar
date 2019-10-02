@@ -18,7 +18,9 @@ def create(request):
         title = request.POST.get('title')
         content = request.POST.get('content')
         start_day = request.POST.get('start_day')
+        start_day = start_day.replace("/", "-")
         end_day = request.POST.get('end_day')
+        end_day = end_day.replace("/", "-")
         start_time = request.POST.get('start_time')
         end_time = request.POST.get('end_time')
 

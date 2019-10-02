@@ -1,20 +1,35 @@
 $(document).ready(function() {
     var currentDate = new Date();
-    function generateCalendar(d) {
-        function monthDays(month, year) {
-            var result = [];
-            var days = new Date(year, month, 0).getDate();
-            for (var i = 1; i <= days; i++) {
-                result.push(i);
-            }       
-            return result;
-        }   
+    var d_startdate = {}
+    async function generateCalendar(d) {
+        await axios.get('api/v1/calendar_list/')
+        .then(res => {
+            res.data.forEach(data => {
+                
+                const start_d = data.start_day.split('-')
+                const end_d = data.end_day.split('-')
+                
+                const diff_date1 = new Date(start_d[2], start_d[0]-1, start_d[1])
+                const diff_date2 = new Date(end_d[2], end_d[0]-1, end_d[1])
+                const diff = Math.floor((diff_date2.getTime() - diff_date1.getTime()) / 1000 / 60 / 60 / 24)
+    
+                d_startdate[data.start_day] = [diff+1, data.title, diff_date1.getDay()]
+            })
+        })
+
+        // function monthDays(month, year) {
+        //     var result = [];
+        //     var days = new Date(year, month, 0).getDate();
+        //     for (var i = 1; i <= days; i++) {
+        //         result.push(i);
+        //     }       
+        //     return result;
+        // }   
         Date.prototype.monthDays = function() {
             var d = new Date(this.getFullYear(), this.getMonth() + 1, 0);
             return d.getDate();
         };
         var details = {
-            // totalDays: monthDays(d.getMonth(), d.getFullYear()),
             totalDays: d.monthDays(),
             weekDays: ['일', '월', '화', '수', '목', '금', '토'],
             months: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12'],
@@ -29,12 +44,7 @@ $(document).ready(function() {
         var day = 1;
 
         var cnt = 1;
-
-        axios.get('api/v1/calendar_list/')
-        .then(res => {
-            console.log(res.data)
-        })
-
+        var date_list = []
         for (var i = 0; i <= 6; i++) {
             if (i == 0) {
                 cal.push(['<div class="week-day">']);
@@ -45,12 +55,35 @@ $(document).ready(function() {
                 if (i === 0) {
                     cal[i].push('<div class="day-name">' + details.weekDays[j] + '</div>');
                 } else if (day > details.totalDays) {
-                    cal[i].push(`<div class="day"><h3 id="${copycurrent2.getMonth()+1 + '/' + cnt + '/' + copycurrent2.getFullYear()}" class="day-label">` + cnt++ + '</h3></div>');
+                    date_list.push(copycurrent2.getMonth()+1 + '-' + '0' + cnt + '-' + copycurrent2.getFullYear())
+                    cal[i].push(`<div class="day"><h3 id="${copycurrent2.getMonth()+1 + '-' + '0' + cnt + '-' + copycurrent2.getFullYear()}" class="day-label">` + cnt++ + '</h3></div>');
                 } else {
                     if (i === 1 && j < start) {
-                        cal[i].push(`<div class="day"><h3 id="${copycurrent1.getMonth()+1 + '/' + restday + '/' + copycurrent1.getFullYear()}" class="day-label">` + restday++ + '</h3></div>');
+                        if (copycurrent1.getMonth()+1 < 10) {
+                            date_list.push('0' + '' + (copycurrent1.getMonth()+1) + '-' + restday + '-' + copycurrent1.getFullYear())
+                            cal[i].push(`<div class="day"><h3 id="${'0' + '' + (copycurrent1.getMonth()+1) + '-' + restday + '-' + copycurrent1.getFullYear()}" class="day-label">` + restday++ + '</h3></div>');
+                        } else {
+                            date_list.push(copycurrent1.getMonth()+1 + '-' + restday + '-' + copycurrent1.getFullYear())
+                            cal[i].push(`<div class="day"><h3 id="${copycurrent1.getMonth()+1 + '-' + restday + '-' + copycurrent1.getFullYear()}" class="day-label">` + restday++ + '</h3></div>');
+                        }
                     } else {
-                        cal[i].push(`<div class="day"><h3 id="${d.getMonth()+1 + '/' + day + '/' + d.getFullYear()}" class="day-label">` + day++ + '</h3></div>');
+                        if (d.getMonth()+1 < 10) {
+                            if (day < 10) {
+                                date_list.push('0' + '' + (d.getMonth()+1) + '-' + '0' + day + '-' + d.getFullYear())
+                                cal[i].push(`<div class="day"><h3 id="${'0' + '' + (d.getMonth()+1) + '-' + '0' + day + '-' + d.getFullYear()}" class="day-label">` + day++ + '</h3></div>');
+                            } else {
+                                date_list.push('0' + '' + (d.getMonth()+1) + '-' + day + '-' + d.getFullYear())
+                                cal[i].push(`<div class="day"><h3 id="${'0' + '' + (d.getMonth()+1) + '-' + day + '-' + d.getFullYear()}" class="day-label">` + day++ + '</h3></div>');
+                            }
+                        } else {
+                            if (day < 10) {
+                                date_list.push(d.getMonth()+1 + '-' + '0' + day + '-' + d.getFullYear())
+                                cal[i].push(`<div class="day"><h3 id="${d.getMonth()+1 + '-' + '0' + day + '-' + d.getFullYear()}" class="day-label">` + day++ + '</h3></div>');
+                            } else {
+                                date_list.push(d.getMonth()+1 + '-' + day + '-' + d.getFullYear())
+                                cal[i].push(`<div class="day"><h3 id="${d.getMonth()+1 + '-' + day + '-' + d.getFullYear()}" class="day-label">` + day++ + '</h3></div>');
+                            }
+                        }
                     }
                 }
             }
@@ -60,10 +93,11 @@ $(document).ready(function() {
                 break;
             }
         }
+
         cal = cal.reduce(function(a, b) {
             return a.concat(b);
         }, []).join('');
-        
+
         $('#div-list').append(cal);
         $('#months').text(details.months[d.getMonth()]);
         $('#year').text(d.getFullYear());
@@ -72,6 +106,20 @@ $(document).ready(function() {
         }).mouseout(function() {
             $(this).removeClass('hover');
         });
+        var day_cal = ['7', '6', '5', '4', '3', '2', '1']
+        for (var i in date_list) {
+            if (date_list[i] in d_startdate) {
+                if (d_startdate[date_list[i]][0]  > day_cal[d_startdate[date_list[i]][2]]) {
+                    $(`#${date_list[i]}`).after(`<div class="event event-start event-end" data-span="${day_cal[d_startdate[date_list[i]][2]]}" data-toggle="popover" data-html="true">${d_startdate[date_list[i]][1]}</div>`);
+                } else {
+                    $(`#${date_list[i]}`).after(`<div class="event event-start event-end" data-span="${d_startdate[date_list[i]][0]}" data-toggle="popover" data-html="true">${d_startdate[date_list[i]][1]}</div>`);
+                }
+
+            }
+
+        }
+        console.log(d_startdate)
+
     }
 
     $('#todaymove').click(function() {
