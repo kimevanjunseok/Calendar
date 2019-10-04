@@ -124,11 +124,13 @@ $(document).ready(async function() {
         await all_DB.forEach(res => {
             const s_day_0 = res.start_day.split('-')
             const s_day = date_list[0].split('-')
-            const e_day = res.end_day.split('-')
+            const e_day_0 = res.end_day.split('-')
+            const e_day = date_list[34].split('-')
             
             const diff_d0 = new Date(s_day_0[2], s_day_0[0]-1, s_day_0[1])
             const diff_d1 = new Date(s_day[2], s_day[0]-1, s_day[1])
-            const diff_d2 = new Date(e_day[2], e_day[0]-1, e_day[1])
+            const diff_d2 = new Date(e_day_0[2], e_day_0[0]-1, e_day_0[1])
+            const diff_d3 = new Date(e_day[2], e_day[0]-1, Number(e_day[1])+1)
 
             const diff_v = Math.floor((diff_d2.getTime() - diff_d1.getTime()) / 1000 / 60 / 60 / 24)
 
@@ -137,6 +139,12 @@ $(document).ready(async function() {
                     d_startdate[date_list[0]].push([diff_v+1, res.title, diff_d1.getDay(), true, `${diff_d0.getFullYear() + '년' + ' ' + (diff_d0.getMonth()+1) + '월' + ' ' + diff_d0.getDate() + '일'}`, `${diff_d2.getFullYear() + '년' + ' ' + (diff_d2.getMonth()+1) + '월' + ' ' + diff_d2.getDate() + '일'}`, res.start_time, res.end_time, res.content, true])
                 } else {
                     d_startdate[date_list[0]] = [[diff_v+1, res.title, diff_d1.getDay(), true, `${diff_d0.getFullYear() + '년' + ' ' + (diff_d0.getMonth()+1) + '월' + ' ' + diff_d0.getDate() + '일'}`, `${diff_d2.getFullYear() + '년' + ' ' + (diff_d2.getMonth()+1) + '월' + ' ' + diff_d2.getDate() + '일'}`, res.start_time, res.end_time, res.content, true]]
+                }
+            } else if (s_day_0 < s_day && e_day < e_day_0 ) {
+                if (date_list[0] in d_startdate) {
+                    d_startdate[date_list[0]].push([35, res.title, diff_d1.getDay(), true, `${diff_d0.getFullYear() + '년' + ' ' + (diff_d0.getMonth()+1) + '월' + ' ' + diff_d0.getDate() + '일'}`, `${diff_d2.getFullYear() + '년' + ' ' + (diff_d2.getMonth()+1) + '월' + ' ' + diff_d2.getDate() + '일'}`, res.start_time, res.end_time, res.content, true])
+                } else {
+                    d_startdate[date_list[0]] = [[35, res.title, diff_d1.getDay(), true, `${diff_d0.getFullYear() + '년' + ' ' + (diff_d0.getMonth()+1) + '월' + ' ' + diff_d0.getDate() + '일'}`, `${diff_d2.getFullYear() + '년' + ' ' + (diff_d2.getMonth()+1) + '월' + ' ' + diff_d2.getDate() + '일'}`, res.start_time, res.end_time, res.content, true]]
                 }
             }
 
@@ -246,7 +254,7 @@ $(document).ready(async function() {
                             if (res[3]) {
                                 $(`#${date_list[i]}`).after(`<div class="event event-end event-consecutive" data-span="${res[0]}" data-toggle="popover" data-html="true" data-content=${data_content_consecutive}>${res[1]}</div>`);
                             } else {
-                                $(`#${date_list[i]}`).after(`<div class="eventevent-start event-end event-consecutive" data-span="${res[0]}" data-toggle="popover" data-html="true" data-content=${data_content_consecutive}>${res[1]}</div>`);
+                                $(`#${date_list[i]}`).after(`<div class="event event-start event-end event-consecutive" data-span="${res[0]}" data-toggle="popover" data-html="true" data-content=${data_content_consecutive}>${res[1]}</div>`);
                             }
                         } else {
                             if (res[3]) {
