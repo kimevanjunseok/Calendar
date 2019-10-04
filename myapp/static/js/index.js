@@ -142,9 +142,9 @@ $(document).ready(async function() {
                 }
             } else if (s_day_0 < s_day && e_day < e_day_0 ) {
                 if (date_list[0] in d_startdate) {
-                    d_startdate[date_list[0]].push([35, res.title, diff_d1.getDay(), true, `${diff_d0.getFullYear() + '년' + ' ' + (diff_d0.getMonth()+1) + '월' + ' ' + diff_d0.getDate() + '일'}`, `${diff_d2.getFullYear() + '년' + ' ' + (diff_d2.getMonth()+1) + '월' + ' ' + diff_d2.getDate() + '일'}`, res.start_time, res.end_time, res.content, true])
+                    d_startdate[date_list[0]].push([36, res.title, diff_d1.getDay(), true, `${diff_d0.getFullYear() + '년' + ' ' + (diff_d0.getMonth()+1) + '월' + ' ' + diff_d0.getDate() + '일'}`, `${diff_d2.getFullYear() + '년' + ' ' + (diff_d2.getMonth()+1) + '월' + ' ' + diff_d2.getDate() + '일'}`, res.start_time, res.end_time, res.content, true])
                 } else {
-                    d_startdate[date_list[0]] = [[35, res.title, diff_d1.getDay(), true, `${diff_d0.getFullYear() + '년' + ' ' + (diff_d0.getMonth()+1) + '월' + ' ' + diff_d0.getDate() + '일'}`, `${diff_d2.getFullYear() + '년' + ' ' + (diff_d2.getMonth()+1) + '월' + ' ' + diff_d2.getDate() + '일'}`, res.start_time, res.end_time, res.content, true]]
+                    d_startdate[date_list[0]] = [[36, res.title, diff_d1.getDay(), true, `${diff_d0.getFullYear() + '년' + ' ' + (diff_d0.getMonth()+1) + '월' + ' ' + diff_d0.getDate() + '일'}`, `${diff_d2.getFullYear() + '년' + ' ' + (diff_d2.getMonth()+1) + '월' + ' ' + diff_d2.getDate() + '일'}`, res.start_time, res.end_time, res.content, true]]
                 }
             }
 
@@ -274,7 +274,6 @@ $(document).ready(async function() {
 
         $('.week, .daily-calendar').click(function(e) {
             var cutdate = e.target.id.replaceAll('-', '/')
-            console.log(cutdate)
             $('[name=start_day]').val(cutdate)
             $('#registerSchedule').modal('show');
         });
