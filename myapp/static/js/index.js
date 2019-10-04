@@ -1,8 +1,8 @@
 $(document).ready(function() {
     var currentDate = new Date();
     async function generateCalendar(d) {
+        var all_DB
         var todayDate = new Date()
-        var today_schedule = ""
         var string_today
         if (todayDate.getMonth() + 1 < 10) {
             if (todayDate.getDate() < 10) {
@@ -19,7 +19,6 @@ $(document).ready(function() {
         }
 
         var d_startdate = {}
-        var all_DB
         await axios.get('api/v1/calendar_list/')
         .then(res => {
             all_DB = res.data
@@ -121,7 +120,6 @@ $(document).ready(function() {
             return a.concat(b);
         }, []).join('');
 
-        today_schedule += `<div class="daily-calendar"><span class="day-name">${todayDate.getDate() + '일' + ' ' + details.weekDays[todayDate.getDay()] + '요일'}</span>`
         await all_DB.forEach(res => {
             const s_day_0 = res.start_day.split('-')
             const s_day = date_list[0].split('-')
@@ -130,51 +128,8 @@ $(document).ready(function() {
             const diff_d0 = new Date(s_day_0[2], s_day_0[0]-1, s_day_0[1])
             const diff_d1 = new Date(s_day[2], s_day[0]-1, s_day[1])
             const diff_d2 = new Date(e_day[2], e_day[0]-1, e_day[1])
-            const diff_d3 = new Date(e_day[2], e_day[0]-1, Number(e_day[1])+1)
 
             const diff_v = Math.floor((diff_d2.getTime() - diff_d1.getTime()) / 1000 / 60 / 60 / 24)
-
-            if (diff_d0 <= todayDate && todayDate < diff_d3) {
-                if (diff_d0 === diff_d2) {
-                    today_schedule += `<div class="event-consecutive event-start event-end" data-toggle="popover" data-html="true" data-placement="left" 
-                    data-content='<div class="content-line">
-                                    <div class="event-marking"></div>
-                                    <div class="title">
-                                        <h5>${res.title}</h5>
-                                        <h6 class="reservation">${diff_d0.getFullYear() + '년' + ' ' + (diff_d0.getMonth()+1) + '월' + ' ' + diff_d0.getDate() + '일' + ' ' + '~' + ' ' + diff_d2.getFullYear() + '년' + ' ' + (diff_d2.getMonth()+1) + '월' + ' ' + diff_d2.getDate() + '일'}</h6>
-                                    </div>
-                                </div>
-                                <div class="content-line">
-                                <i class="material-icons">
-                                    notes
-                                </i>
-                                <div class="title">
-                                    <h6 class="reservation">
-                                        ${res.content}
-                                    </h6>
-                                    </div>'>${res.title}
-                                </div>`
-                } else {
-                    today_schedule += `<div class="event-consecutive event-start event-end" data-toggle="popover" data-html="true" data-placement="left" 
-                    data-content='<div class="content-line">
-                                    <div class="event-consecutive-marking"></div>
-                                    <div class="title">
-                                        <h5>${res.title}</h5>
-                                        <h6 class="reservation">${diff_d0.getFullYear() + '년' + ' ' + (diff_d0.getMonth()+1) + '월' + ' ' + diff_d0.getDate() + '일' + ' ' + '~' + ' ' + diff_d2.getFullYear() + '년' + ' ' + (diff_d2.getMonth()+1) + '월' + ' ' + diff_d2.getDate() + '일'}</h6>
-                                    </div>
-                                </div>
-                                <div class="content-line">
-                                <i class="material-icons">
-                                    notes
-                                </i>
-                                <div class="title">
-                                    <h6 class="reservation">
-                                        ${res.content}
-                                    </h6>
-                                    </div>'>${res.title}
-                                </div>`
-                }
-            }
 
             if (!date_list.includes(res.start_day) && date_list.includes(res.end_day)) {
                 if (date_list[0] in d_startdate) {
@@ -185,10 +140,8 @@ $(document).ready(function() {
             }
 
         })
-        today_schedule += '</div>'
 
         $('#div-list').append(cal);
-        $('#day').append(today_schedule);
         $('#months').text(details.months[d.getMonth()]);
         $('#year').text(d.getFullYear());
         $('td.day').mouseover(function() {
@@ -197,6 +150,7 @@ $(document).ready(function() {
             $(this).removeClass('hover');
         });
 
+        generateDaily(d)
         var day_cal = ['7', '6', '5', '4', '3', '2', '1']
         for (var i in date_list) {
             if (date_list[i] in d_startdate) {
@@ -317,24 +271,95 @@ $(document).ready(function() {
         });
     }
 
+    async function generateDaily(d) {
+        await axios.get('api/v1/calendar_list/')
+            .then(data => {
+                const weekDays = ['일', '월', '화', '수', '목', '금', '토']
+                var today_schedule = `<div class="daily-calendar"><span class="day-name">${d.getDate() + '일' + ' ' + weekDays[d.getDay()] + '요일'}</span>`
+                data.data.forEach(res => {
+                    const start_date = res.start_day.split('-')
+                    const end_date = res.end_day.split('-')
+                    
+                    const start_date_0 = new Date(start_date[2], start_date[0]-1, start_date[1])
+                    const end_date_0 = new Date(end_date[2], end_date[0]-1, end_date[1])
+                    const end_date_1 = new Date(end_date[2], end_date[0]-1, Number(end_date[1])+1)
+        
+                    if (start_date_0 <= d && d < end_date_1) {
+                        if (start_date_0 === end_date_0) {
+                            today_schedule += `<div class="event event-start event-end" data-toggle="popover" data-html="true" data-placement="left" 
+                            data-content='<div class="content-line">
+                                            <div class="event-marking"></div>
+                                            <div class="title">
+                                                <h5>${res.title}</h5>
+                                                <h6 class="reservation">${start_date_0.getFullYear() + '년' + ' ' + (start_date_0.getMonth()+1) + '월' + ' ' + start_date_0.getDate() + '일' + ' ' + '~' + ' ' + end_date_0.getFullYear() + '년' + ' ' + (end_date_0.getMonth()+1) + '월' + ' ' + end_date_0.getDate() + '일'}</h6>
+                                            </div>
+                                        </div>
+                                        <div class="content-line">
+                                        <i class="material-icons">
+                                            notes
+                                        </i>
+                                        <div class="title">
+                                            <h6 class="reservation">
+                                                ${res.content}
+                                            </h6>
+                                            </div>'>${res.title}
+                                        </div>`
+                        } else {
+                            today_schedule += `<div class="event-consecutive event-start event-end" data-toggle="popover" data-html="true" data-placement="left" 
+                            data-content='<div class="content-line">
+                                            <div class="event-consecutive-marking"></div>
+                                            <div class="title">
+                                                <h5>${res.title}</h5>
+                                                <h6 class="reservation">${start_date_0.getFullYear() + '년' + ' ' + (start_date_0.getMonth()+1) + '월' + ' ' + start_date_0.getDate() + '일' + ' ' + '~' + ' ' + end_date_0.getFullYear() + '년' + ' ' + (end_date_0.getMonth()+1) + '월' + ' ' + end_date_0.getDate() + '일'}</h6>
+                                            </div>
+                                        </div>
+                                        <div class="content-line">
+                                        <i class="material-icons">
+                                            notes
+                                        </i>
+                                        <div class="title">
+                                            <h6 class="reservation">
+                                                ${res.content}
+                                            </h6>
+                                            </div>'>${res.title}
+                                        </div>`
+                        }
+                    }
+                })
+                today_schedule += '</div>'
+        
+                $('#day').append(today_schedule);
+            })
+    }
+
     $('#todaymove').click(function() {
         $('#div-list').text('');
         $('#day').text('');
-        var newcurrentDate = new Date()
-        generateCalendar(newcurrentDate);
+        currentDate = new Date()
+        generateCalendar(currentDate);
     });
 
     $('#left').click(function() {
         $('#div-list').text('');
         $('#day').text('');
-        currentDate = new Date(currentDate.getFullYear(), currentDate.getMonth() - 1)
-        generateCalendar(currentDate);
+        if ($( '.nav-link' ).attr( 'aria-selected' ) === 'true') {
+            currentDate = new Date(currentDate.getFullYear(), currentDate.getMonth() - 1)
+            generateCalendar(currentDate);
+        } else {
+            currentDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), Number(currentDate.getDate()) - 1)
+            generateCalendar(currentDate)
+        }
     });
-    $('#right').click(function() {
+    $('#right').click(function(e) {
         $('#div-list').text('');
         $('#day').text('');
-        currentDate = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1)
-        generateCalendar(currentDate);
+        if ($( '.nav-link' ).attr( 'aria-selected' ) === 'true') {
+            currentDate = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1)
+            generateCalendar(currentDate);
+        } else {
+            currentDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), Number(currentDate.getDate()) + 1)
+            generateCalendar(currentDate)
+        }
     });
 
     $('#inlineCheckbox2').click(function() {
@@ -377,3 +402,4 @@ $(function () {
         format: 'LT'
     });
 });
+
