@@ -243,7 +243,7 @@ $(document).ready(async function() {
                         }
 
                         if (s_new_date in d_startdate) {
-                            d_startdate[s_new_date].unshift([Number(res[0]) - Number(day_cal[res[2]]), res[1], 0, true, res[4], res[5], res[6], res[7], res[8], res[9]])
+                            d_startdate[s_new_date].push([Number(res[0]) - Number(day_cal[res[2]]), res[1], 0, true, res[4], res[5], res[6], res[7], res[8], res[9]])
                         } else {
                             d_startdate[s_new_date] = [[Number(res[0]) - Number(day_cal[res[2]]), res[1], 0, true, res[4], res[5], res[6], res[7], res[8], res[9]]]
                         }
