@@ -1,7 +1,12 @@
-$(document).ready(function() {
+$(document).ready(async function() {
     var currentDate = new Date();
+    var all_DB
+    await axios.get('api/v1/calendar_list/')
+        .then(res => {
+            all_DB = res.data
+        })
+
     async function generateCalendar(d) {
-        var all_DB
         var todayDate = new Date()
         var string_today
         if (todayDate.getMonth() + 1 < 10) {
@@ -19,31 +24,27 @@ $(document).ready(function() {
         }
 
         var d_startdate = {}
-        await axios.get('api/v1/calendar_list/')
-        .then(res => {
-            all_DB = res.data
-            res.data.forEach(data => {
-                
-                const start_d = data.start_day.split('-')
-                const end_d = data.end_day.split('-')
-                var judge
-                if (data.start_day === data.end_day) {
-                    judge = false
-                } else {
-                    judge = true
-                }
+        await all_DB.forEach(res => {
 
-                const diff_date1 = new Date(start_d[2], start_d[0]-1, start_d[1])
-                const diff_date2 = new Date(end_d[2], end_d[0]-1, end_d[1])
-                const diff = Math.floor((diff_date2.getTime() - diff_date1.getTime()) / 1000 / 60 / 60 / 24)
+            const start_d = res.start_day.split('-')
+            const end_d = res.end_day.split('-')
+            var judge
+            if (res.start_day === res.end_day) {
+                judge = false
+            } else {
+                judge = true
+            }
 
-                if (data.start_day in d_startdate) {
-                    d_startdate[data.start_day].push([diff+1, data.title, diff_date1.getDay(), false, `${diff_date1.getFullYear() + '년' + ' ' + (diff_date1.getMonth()+1) + '월' + ' ' + diff_date1.getDate() + '일'}`, `${diff_date2.getFullYear() + '년' + ' ' + (diff_date2.getMonth()+1) + '월' + ' ' + diff_date2.getDate() + '일'}`, data.start_time, data.end_time, data.content, judge])
-                } else [
-                    d_startdate[data.start_day] = [[diff+1, data.title, diff_date1.getDay(), false, `${diff_date1.getFullYear() + '년' + ' ' + (diff_date1.getMonth()+1) + '월' + ' ' + diff_date1.getDate() + '일'}`, `${diff_date2.getFullYear() + '년' + ' ' + (diff_date2.getMonth()+1) + '월' + ' ' + diff_date2.getDate() + '일'}`, data.start_time, data.end_time, data.content, judge]]
-                ]
-    
-            })
+            const diff_date1 = new Date(start_d[2], start_d[0]-1, start_d[1])
+            const diff_date2 = new Date(end_d[2], end_d[0]-1, end_d[1])
+            const diff = Math.floor((diff_date2.getTime() - diff_date1.getTime()) / 1000 / 60 / 60 / 24)
+
+            if (res.start_day in d_startdate) {
+                d_startdate[res.start_day].push([diff+1, res.title, diff_date1.getDay(), false, `${diff_date1.getFullYear() + '년' + ' ' + (diff_date1.getMonth()+1) + '월' + ' ' + diff_date1.getDate() + '일'}`, `${diff_date2.getFullYear() + '년' + ' ' + (diff_date2.getMonth()+1) + '월' + ' ' + diff_date2.getDate() + '일'}`, res.start_time, res.end_time, res.content, judge])
+            } else [
+                d_startdate[res.start_day] = [[diff+1, res.title, diff_date1.getDay(), false, `${diff_date1.getFullYear() + '년' + ' ' + (diff_date1.getMonth()+1) + '월' + ' ' + diff_date1.getDate() + '일'}`, `${diff_date2.getFullYear() + '년' + ' ' + (diff_date2.getMonth()+1) + '월' + ' ' + diff_date2.getDate() + '일'}`, res.start_time, res.end_time, res.content, judge]]
+            ]
+
         })
 
         Date.prototype.monthDays = function() {
@@ -271,65 +272,63 @@ $(document).ready(function() {
         });
     }
 
-    async function generateDaily(d) {
-        await axios.get('api/v1/calendar_list/')
-            .then(data => {
-                const weekDays = ['일', '월', '화', '수', '목', '금', '토']
-                var today_schedule = `<div class="daily-calendar"><span class="day-name">${d.getDate() + '일' + ' ' + weekDays[d.getDay()] + '요일'}</span>`
-                data.data.forEach(res => {
-                    const start_date = res.start_day.split('-')
-                    const end_date = res.end_day.split('-')
-                    
-                    const start_date_0 = new Date(start_date[2], start_date[0]-1, start_date[1])
-                    const end_date_0 = new Date(end_date[2], end_date[0]-1, end_date[1])
-                    const end_date_1 = new Date(end_date[2], end_date[0]-1, Number(end_date[1])+1)
-        
-                    if (start_date_0 <= d && d < end_date_1) {
-                        if (start_date_0 === end_date_0) {
-                            today_schedule += `<div class="event event-start event-end" data-toggle="popover" data-html="true" data-placement="left" 
-                            data-content='<div class="content-line">
-                                            <div class="event-marking"></div>
-                                            <div class="title">
-                                                <h5>${res.title}</h5>
-                                                <h6 class="reservation">${start_date_0.getFullYear() + '년' + ' ' + (start_date_0.getMonth()+1) + '월' + ' ' + start_date_0.getDate() + '일' + ' ' + '~' + ' ' + end_date_0.getFullYear() + '년' + ' ' + (end_date_0.getMonth()+1) + '월' + ' ' + end_date_0.getDate() + '일'}</h6>
-                                            </div>
-                                        </div>
-                                        <div class="content-line">
-                                        <i class="material-icons">
-                                            notes
-                                        </i>
-                                        <div class="title">
-                                            <h6 class="reservation">
-                                                ${res.content}
-                                            </h6>
-                                            </div>'>${res.title}
-                                        </div>`
-                        } else {
-                            today_schedule += `<div class="event-consecutive event-start event-end" data-toggle="popover" data-html="true" data-placement="left" 
-                            data-content='<div class="content-line">
-                                            <div class="event-consecutive-marking"></div>
-                                            <div class="title">
-                                                <h5>${res.title}</h5>
-                                                <h6 class="reservation">${start_date_0.getFullYear() + '년' + ' ' + (start_date_0.getMonth()+1) + '월' + ' ' + start_date_0.getDate() + '일' + ' ' + '~' + ' ' + end_date_0.getFullYear() + '년' + ' ' + (end_date_0.getMonth()+1) + '월' + ' ' + end_date_0.getDate() + '일'}</h6>
-                                            </div>
-                                        </div>
-                                        <div class="content-line">
-                                        <i class="material-icons">
-                                            notes
-                                        </i>
-                                        <div class="title">
-                                            <h6 class="reservation">
-                                                ${res.content}
-                                            </h6>
-                                            </div>'>${res.title}
-                                        </div>`
-                        }
-                    }
-                })
-                today_schedule += '</div>'
-        
-                $('#day').append(today_schedule);
-            })
+    async function generateDaily(d) {  
+        const weekDays = ['일', '월', '화', '수', '목', '금', '토']
+        var today_schedule = `<div class="daily-calendar"><span class="day-name">${d.getDate() + '일' + ' ' + weekDays[d.getDay()] + '요일'}</span>`
+        await all_DB.forEach(res => {
+            const start_date = res.start_day.split('-')
+            const end_date = res.end_day.split('-')
+            
+            const start_date_0 = new Date(start_date[2], start_date[0]-1, start_date[1])
+            const end_date_0 = new Date(end_date[2], end_date[0]-1, end_date[1])
+            const end_date_1 = new Date(end_date[2], end_date[0]-1, Number(end_date[1])+1)
+
+            if (start_date_0 <= d && d < end_date_1) {
+                if (start_date_0 === end_date_0) {
+                    today_schedule += `<div class="event event-start event-end" data-toggle="popover" data-html="true" data-placement="left" 
+                    data-content='<div class="content-line">
+                                    <div class="event-marking"></div>
+                                    <div class="title">
+                                        <h5>${res.title}</h5>
+                                        <h6 class="reservation">${start_date_0.getFullYear() + '년' + ' ' + (start_date_0.getMonth()+1) + '월' + ' ' + start_date_0.getDate() + '일' + ' ' + '~' + ' ' + end_date_0.getFullYear() + '년' + ' ' + (end_date_0.getMonth()+1) + '월' + ' ' + end_date_0.getDate() + '일'}</h6>
+                                    </div>
+                                </div>
+                                <div class="content-line">
+                                <i class="material-icons">
+                                    notes
+                                </i>
+                                <div class="title">
+                                    <h6 class="reservation">
+                                        ${res.content}
+                                    </h6>
+                                    </div>'>${res.title}
+                                </div>`
+                } else {
+                    today_schedule += `<div class="event-consecutive event-start event-end" data-toggle="popover" data-html="true" data-placement="left" 
+                    data-content='<div class="content-line">
+                                    <div class="event-consecutive-marking"></div>
+                                    <div class="title">
+                                        <h5>${res.title}</h5>
+                                        <h6 class="reservation">${start_date_0.getFullYear() + '년' + ' ' + (start_date_0.getMonth()+1) + '월' + ' ' + start_date_0.getDate() + '일' + ' ' + '~' + ' ' + end_date_0.getFullYear() + '년' + ' ' + (end_date_0.getMonth()+1) + '월' + ' ' + end_date_0.getDate() + '일'}</h6>
+                                    </div>
+                                </div>
+                                <div class="content-line">
+                                <i class="material-icons">
+                                    notes
+                                </i>
+                                <div class="title">
+                                    <h6 class="reservation">
+                                        ${res.content}
+                                    </h6>
+                                    </div>'>${res.title}
+                                </div>`
+                }
+            }
+      
+        })
+        today_schedule += '</div>'
+
+        $('#day').append(today_schedule);
     }
 
     $('#todaymove').click(function() {
