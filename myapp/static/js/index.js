@@ -11,12 +11,12 @@ $(document).ready(function() {
                 const start_d = data.start_day.split('-')
                 const end_d = data.end_day.split('-')
                 var judge
-                if (start_d === end_d) {
-                    judge = true
-                } else {
+                if (data.start_day === data.end_day) {
                     judge = false
+                } else {
+                    judge = true
                 }
-                
+
                 const diff_date1 = new Date(start_d[2], start_d[0]-1, start_d[1])
                 const diff_date2 = new Date(end_d[2], end_d[0]-1, end_d[1])
                 const diff = Math.floor((diff_date2.getTime() - diff_date1.getTime()) / 1000 / 60 / 60 / 24)
@@ -125,9 +125,9 @@ $(document).ready(function() {
 
             if (!date_list.includes(res.start_day) && date_list.includes(res.end_day)) {
                 if (date_list[0] in d_startdate) {
-                    d_startdate[date_list[0]].push([diff_v+1, res.title, diff_d1.getDay(), true, `${diff_d0.getFullYear() + '년' + ' ' + diff_d0.getMonth() + '월' + ' ' + diff_d0.getDate() + '일'}`, `${diff_d2.getFullYear() + '년' + ' ' + diff_d2.getMonth() + '월' + ' ' + diff_d2.getDate() + '일'}`, res.start_time, res.end_time, res.content, false])
+                    d_startdate[date_list[0]].push([diff_v+1, res.title, diff_d1.getDay(), true, `${diff_d0.getFullYear() + '년' + ' ' + diff_d0.getMonth() + '월' + ' ' + diff_d0.getDate() + '일'}`, `${diff_d2.getFullYear() + '년' + ' ' + diff_d2.getMonth() + '월' + ' ' + diff_d2.getDate() + '일'}`, res.start_time, res.end_time, res.content, true])
                 } else {
-                    d_startdate[date_list[0]] = [[diff_v+1, res.title, diff_d1.getDay(), true, `${diff_d0.getFullYear() + '년' + ' ' + diff_d0.getMonth() + '월' + ' ' + diff_d0.getDate() + '일'}`, `${diff_d2.getFullYear() + '년' + ' ' + diff_d2.getMonth() + '월' + ' ' + diff_d2.getDate() + '일'}`, res.start_time, res.end_time, res.content, false]]
+                    d_startdate[date_list[0]] = [[diff_v+1, res.title, diff_d1.getDay(), true, `${diff_d0.getFullYear() + '년' + ' ' + diff_d0.getMonth() + '월' + ' ' + diff_d0.getDate() + '일'}`, `${diff_d2.getFullYear() + '년' + ' ' + diff_d2.getMonth() + '월' + ' ' + diff_d2.getDate() + '일'}`, res.start_time, res.end_time, res.content, true]]
                 }
             }
         })
@@ -145,7 +145,7 @@ $(document).ready(function() {
                                                     ${res[4] + " " + "~" + " " + res[5]}
                                                 </h6>
                                                 <span class="reservation-time">
-                                                    ⋅오후 2:00~ 3:00
+                                                    ⋅${res[6] + "~" + res[7]}
                                                 </span>
                                             </div>
                                         </div>
@@ -160,10 +160,18 @@ $(document).ready(function() {
                                             </div>
                                         </div>'`
                     if (Number(res[0]) > Number(day_cal[res[2]])) {
-                        if (res[3]) {
-                            $(`#${date_list[i]}`).after(`<div class="event" data-span="${day_cal[res[2]]}" data-toggle="popover" data-html="true" data-content=${data_content}>${res[1]}</div>`);
+                        if (res[9]) {
+                            if (res[3]) {
+                                $(`#${date_list[i]}`).after(`<div class="event event-consecutive" data-span="${day_cal[res[2]]}" data-toggle="popover" data-html="true" data-content=${data_content}>${res[1]}</div>`);
+                            } else {
+                                $(`#${date_list[i]}`).after(`<div class="event event-start event-consecutive" data-span="${day_cal[res[2]]}" data-toggle="popover" data-html="true" data-content=${data_content}>${res[1]}</div>`);
+                            }
                         } else {
-                            $(`#${date_list[i]}`).after(`<div class="event event-start" data-span="${day_cal[res[2]]}" data-toggle="popover" data-html="true" data-content=${data_content}>${res[1]}</div>`);
+                            if (res[3]) {
+                                $(`#${date_list[i]}`).after(`<div class="event" data-span="${day_cal[res[2]]}" data-toggle="popover" data-html="true" data-content=${data_content}>${res[1]}</div>`);
+                            } else {
+                                $(`#${date_list[i]}`).after(`<div class="event event-start" data-span="${day_cal[res[2]]}" data-toggle="popover" data-html="true" data-content=${data_content}>${res[1]}</div>`);
+                            }
                         }
 
                         var share = date_list[i].split('-')
@@ -184,16 +192,24 @@ $(document).ready(function() {
                         }
 
                         if (s_new_date in d_startdate) {
-                            d_startdate[s_new_date].unshift([Number(res[0]) - Number(day_cal[res[2]]), res[1], 0, true, res[4], res[5]])
+                            d_startdate[s_new_date].unshift([Number(res[0]) - Number(day_cal[res[2]]), res[1], 0, true, res[4], res[5], res[6], res[7], res[8], res[9]])
                         } else {
-                            d_startdate[s_new_date] = [[Number(res[0]) - Number(day_cal[res[2]]), res[1], 0, true, res[4], res[5]]]
+                            d_startdate[s_new_date] = [[Number(res[0]) - Number(day_cal[res[2]]), res[1], 0, true, res[4], res[5], res[6], res[7], res[8], res[9]]]
                         }
 
                     } else {
-                        if (res[3]) {
-                            $(`#${date_list[i]}`).after(`<div class="event event-end" data-span="${res[0]}" data-toggle="popover" data-html="true" data-content=${data_content}>${res[1]}</div>`);
+                        if (res[9]) {
+                            if (res[3]) {
+                                $(`#${date_list[i]}`).after(`<div class="event event-end event-consecutive" data-span="${res[0]}" data-toggle="popover" data-html="true" data-content=${data_content}>${res[1]}</div>`);
+                            } else {
+                                $(`#${date_list[i]}`).after(`<div class="eventevent-start event-end event-consecutive" data-span="${res[0]}" data-toggle="popover" data-html="true" data-content=${data_content}>${res[1]}</div>`);
+                            }
                         } else {
-                            $(`#${date_list[i]}`).after(`<div class="event event-start event-end" data-span="${res[0]}" data-toggle="popover" data-html="true" data-content=${data_content}>${res[1]}</div>`);
+                            if (res[3]) {
+                                $(`#${date_list[i]}`).after(`<div class="event event-end" data-span="${res[0]}" data-toggle="popover" data-html="true" data-content=${data_content}>${res[1]}</div>`);
+                            } else {
+                                $(`#${date_list[i]}`).after(`<div class="event event-start event-end" data-span="${res[0]}" data-toggle="popover" data-html="true" data-content=${data_content}>${res[1]}</div>`);
+                            }
                         }
                     }
                 })
@@ -204,9 +220,13 @@ $(document).ready(function() {
             $('[data-toggle="popover"]').popover().on('inserted.bs.popover')
         });
 
-        // $('.week, .daily-calendar').click(function() {
-        //     $('#registerSchedule').modal('show');
-        // });
+        $('.week, .daily-calendar').click(function() {
+            $('#registerSchedule').modal('show');
+        });
+
+        $(".event-consecutive, .event, .event-repeated").click(function(event) {
+            event.stopPropagation();
+        });
     }
 
     $('#todaymove').click(function() {
@@ -226,6 +246,17 @@ $(document).ready(function() {
         generateCalendar(currentDate);
     });
 
+    $('#inlineCheckbox2').click(function() {
+        if ($('#inlineCheckbox2').is(":checked")) {
+            $('[name="start_time"]').attr("readonly", true);
+            $('[name="end_time"]').attr("readonly", true);
+        } else {
+            $('[name="start_time"]').attr("readonly", false);
+            $('[name="end_time"]').attr("readonly", false);
+        }
+
+    });
+
     generateCalendar(currentDate);
 });
 
@@ -236,10 +267,6 @@ $(function () {
 
 $(function () {
     $('#view li:first-child a').tab('show')
-});
-
-$(".event-consecutive, .event, .event-repeated").click(function(event) {
-    event.stopPropagation();
 });
 
 $(function () {
