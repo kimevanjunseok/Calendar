@@ -152,6 +152,7 @@ $(document).ready(async function() {
         });
 
         generateDaily(d)
+
         var day_cal = ['7', '6', '5', '4', '3', '2', '1']
         for (var i in date_list) {
             if (date_list[i] in d_startdate) {
@@ -263,7 +264,10 @@ $(document).ready(async function() {
             $('[data-toggle="popover"]').popover().on('inserted.bs.popover')
         });
 
-        $('.week, .daily-calendar').click(function() {
+        $('.week, .daily-calendar').click(function(e) {
+            var cutdate = e.target.id.replaceAll('-', '/')
+            console.log(cutdate)
+            $('[name=start_day]').val(cutdate)
             $('#registerSchedule').modal('show');
         });
 
@@ -284,7 +288,7 @@ $(document).ready(async function() {
             const end_date_1 = new Date(end_date[2], end_date[0]-1, Number(end_date[1])+1)
 
             if (start_date_0 <= d && d < end_date_1) {
-                if (start_date_0 === end_date_0) {
+                if (res.start_day === res.end_day) {
                     today_schedule += `<div class="event event-start event-end" data-toggle="popover" data-html="true" data-placement="left" 
                     data-content='<div class="content-line">
                                     <div class="event-marking"></div>
@@ -327,7 +331,6 @@ $(document).ready(async function() {
       
         })
         today_schedule += '</div>'
-
         $('#day').append(today_schedule);
     }
 
@@ -371,10 +374,12 @@ $(document).ready(async function() {
         }
 
     });
-
     generateCalendar(currentDate);
 });
 
+String.prototype.replaceAll = function(org, dest) {
+    return this.split(org).join(dest);
+}
 
 $(function () {
     $('[data-toggle="tooltip"]').tooltip()
@@ -401,4 +406,3 @@ $(function () {
         format: 'LT'
     });
 });
-
