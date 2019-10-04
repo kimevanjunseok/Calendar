@@ -25,7 +25,6 @@ $(document).ready(async function() {
 
         var d_startdate = {}
         await all_DB.forEach(res => {
-
             const start_d = res.start_day.split('-')
             const end_d = res.end_day.split('-')
             var judge
@@ -140,7 +139,7 @@ $(document).ready(async function() {
                 } else {
                     d_startdate[date_list[0]] = [[diff_v+1, res.title, diff_d1.getDay(), true, `${diff_d0.getFullYear() + '년' + ' ' + (diff_d0.getMonth()+1) + '월' + ' ' + diff_d0.getDate() + '일'}`, `${diff_d2.getFullYear() + '년' + ' ' + (diff_d2.getMonth()+1) + '월' + ' ' + diff_d2.getDate() + '일'}`, res.start_time, res.end_time, res.content, true]]
                 }
-            } else if (diff_d0 <= diff_d1 && diff_d3 < diff_d2 ) {
+            } else if (diff_d0 < diff_d1 && diff_d3 < diff_d2 ) {
                 if (date_list[0] in d_startdate) {
                     d_startdate[date_list[0]].push([36, res.title, diff_d1.getDay(), true, `${diff_d0.getFullYear() + '년' + ' ' + (diff_d0.getMonth()+1) + '월' + ' ' + diff_d0.getDate() + '일'}`, `${diff_d2.getFullYear() + '년' + ' ' + (diff_d2.getMonth()+1) + '월' + ' ' + diff_d2.getDate() + '일'}`, res.start_time, res.end_time, res.content, true])
                 } else {
