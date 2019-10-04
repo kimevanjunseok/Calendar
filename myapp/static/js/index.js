@@ -125,8 +125,8 @@ $(document).ready(async function() {
             const s_day_0 = res.start_day.split('-')
             const s_day = date_list[0].split('-')
             const e_day_0 = res.end_day.split('-')
-            const e_day = date_list[34].split('-')
-            
+            const e_day = date_list[date_list.length - 1].split('-')
+
             const diff_d0 = new Date(s_day_0[2], s_day_0[0]-1, s_day_0[1])
             const diff_d1 = new Date(s_day[2], s_day[0]-1, s_day[1])
             const diff_d2 = new Date(e_day_0[2], e_day_0[0]-1, e_day_0[1])
@@ -140,7 +140,7 @@ $(document).ready(async function() {
                 } else {
                     d_startdate[date_list[0]] = [[diff_v+1, res.title, diff_d1.getDay(), true, `${diff_d0.getFullYear() + '년' + ' ' + (diff_d0.getMonth()+1) + '월' + ' ' + diff_d0.getDate() + '일'}`, `${diff_d2.getFullYear() + '년' + ' ' + (diff_d2.getMonth()+1) + '월' + ' ' + diff_d2.getDate() + '일'}`, res.start_time, res.end_time, res.content, true]]
                 }
-            } else if (s_day_0 < s_day && e_day < e_day_0 ) {
+            } else if (diff_d0 <= diff_d1 && diff_d3 < diff_d2 ) {
                 if (date_list[0] in d_startdate) {
                     d_startdate[date_list[0]].push([36, res.title, diff_d1.getDay(), true, `${diff_d0.getFullYear() + '년' + ' ' + (diff_d0.getMonth()+1) + '월' + ' ' + diff_d0.getDate() + '일'}`, `${diff_d2.getFullYear() + '년' + ' ' + (diff_d2.getMonth()+1) + '월' + ' ' + diff_d2.getDate() + '일'}`, res.start_time, res.end_time, res.content, true])
                 } else {
