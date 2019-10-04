@@ -10,15 +10,21 @@ $(document).ready(function() {
                 
                 const start_d = data.start_day.split('-')
                 const end_d = data.end_day.split('-')
+                var judge
+                if (start_d === end_d) {
+                    judge = true
+                } else {
+                    judge = false
+                }
                 
                 const diff_date1 = new Date(start_d[2], start_d[0]-1, start_d[1])
                 const diff_date2 = new Date(end_d[2], end_d[0]-1, end_d[1])
                 const diff = Math.floor((diff_date2.getTime() - diff_date1.getTime()) / 1000 / 60 / 60 / 24)
 
                 if (data.start_day in d_startdate) {
-                    d_startdate[data.start_day].push([diff+1, data.title, diff_date1.getDay(), false])
+                    d_startdate[data.start_day].push([diff+1, data.title, diff_date1.getDay(), false, `${diff_date1.getFullYear() + '년' + ' ' + diff_date1.getMonth() + '월' + ' ' + diff_date1.getDate() + '일'}`, `${diff_date2.getFullYear() + '년' + ' ' + diff_date2.getMonth() + '월' + ' ' + diff_date2.getDate() + '일'}`, data.start_time, data.end_time, data.content, judge])
                 } else [
-                    d_startdate[data.start_day] = [[diff+1, data.title, diff_date1.getDay(), false]]
+                    d_startdate[data.start_day] = [[diff+1, data.title, diff_date1.getDay(), false, `${diff_date1.getFullYear() + '년' + ' ' + diff_date1.getMonth() + '월' + ' ' + diff_date1.getDate() + '일'}`, `${diff_date2.getFullYear() + '년' + ' ' + diff_date2.getMonth() + '월' + ' ' + diff_date2.getDate() + '일'}`, data.start_time, data.end_time, data.content, judge]]
                 ]
     
             })
@@ -108,18 +114,20 @@ $(document).ready(function() {
         });
 
         all_DB.forEach(res => {
+            const s_day_0 = res.start_day.split('-')
             const s_day = date_list[0].split('-')
             const e_day = res.end_day.split('-')
             
+            const diff_d0 = new Date(s_day_0[2], s_day_0[0]-1, s_day_0[1])
             const diff_d1 = new Date(s_day[2], s_day[0]-1, s_day[1])
             const diff_d2 = new Date(e_day[2], e_day[0]-1, e_day[1])
             const diff_v = Math.floor((diff_d2.getTime() - diff_d1.getTime()) / 1000 / 60 / 60 / 24)
 
             if (!date_list.includes(res.start_day) && date_list.includes(res.end_day)) {
                 if (date_list[0] in d_startdate) {
-                    d_startdate[date_list[0]].push([diff_v+1, res.title, diff_d1.getDay(), true])
+                    d_startdate[date_list[0]].push([diff_v+1, res.title, diff_d1.getDay(), true, `${diff_d0.getFullYear() + '년' + ' ' + diff_d0.getMonth() + '월' + ' ' + diff_d0.getDate() + '일'}`, `${diff_d2.getFullYear() + '년' + ' ' + diff_d2.getMonth() + '월' + ' ' + diff_d2.getDate() + '일'}`, res.start_time, res.end_time, res.content, false])
                 } else {
-                    d_startdate[date_list[0]] = [[diff_v+1, res.title, diff_d1.getDay(), true]]
+                    d_startdate[date_list[0]] = [[diff_v+1, res.title, diff_d1.getDay(), true, `${diff_d0.getFullYear() + '년' + ' ' + diff_d0.getMonth() + '월' + ' ' + diff_d0.getDate() + '일'}`, `${diff_d2.getFullYear() + '년' + ' ' + diff_d2.getMonth() + '월' + ' ' + diff_d2.getDate() + '일'}`, res.start_time, res.end_time, res.content, false]]
                 }
             }
         })
@@ -128,11 +136,34 @@ $(document).ready(function() {
         for (var i in date_list) {
             if (date_list[i] in d_startdate) {
                 d_startdate[date_list[i]].forEach(res => {
+                    var data_content = `'<div class="content-line">
+                                            <div class="event-marking">
+                                            </div>
+                                            <div class="title">
+                                                <h5>${res[1]}</h5>
+                                                <h6 class="reservation">
+                                                    ${res[4] + " " + "~" + " " + res[5]}
+                                                </h6>
+                                                <span class="reservation-time">
+                                                    ⋅오후 2:00~ 3:00
+                                                </span>
+                                            </div>
+                                        </div>
+                                        <div class="content-line">
+                                            <i class="material-icons">
+                                                notes
+                                            </i>
+                                            <div class="title">
+                                                <h6 class="reservation">
+                                                    ${res[8]}
+                                                </h6>
+                                            </div>
+                                        </div>'`
                     if (Number(res[0]) > Number(day_cal[res[2]])) {
                         if (res[3]) {
-                            $(`#${date_list[i]}`).after(`<div class="event" data-span="${day_cal[res[2]]}" data-toggle="popover" data-html="true">${res[1]}</div>`);
+                            $(`#${date_list[i]}`).after(`<div class="event" data-span="${day_cal[res[2]]}" data-toggle="popover" data-html="true" data-content=${data_content}>${res[1]}</div>`);
                         } else {
-                            $(`#${date_list[i]}`).after(`<div class="event event-start" data-span="${day_cal[res[2]]}" data-toggle="popover" data-html="true">${res[1]}</div>`);
+                            $(`#${date_list[i]}`).after(`<div class="event event-start" data-span="${day_cal[res[2]]}" data-toggle="popover" data-html="true" data-content=${data_content}>${res[1]}</div>`);
                         }
 
                         var share = date_list[i].split('-')
@@ -153,21 +184,29 @@ $(document).ready(function() {
                         }
 
                         if (s_new_date in d_startdate) {
-                            d_startdate[s_new_date].unshift([Number(res[0]) - Number(day_cal[res[2]]), res[1], 0, true])
+                            d_startdate[s_new_date].unshift([Number(res[0]) - Number(day_cal[res[2]]), res[1], 0, true, res[4], res[5]])
                         } else {
-                            d_startdate[s_new_date] = [[Number(res[0]) - Number(day_cal[res[2]]), res[1], 0, true]]
+                            d_startdate[s_new_date] = [[Number(res[0]) - Number(day_cal[res[2]]), res[1], 0, true, res[4], res[5]]]
                         }
 
                     } else {
                         if (res[3]) {
-                            $(`#${date_list[i]}`).after(`<div class="event event-end" data-span="${res[0]}" data-toggle="popover" data-html="true">${res[1]}</div>`);
+                            $(`#${date_list[i]}`).after(`<div class="event event-end" data-span="${res[0]}" data-toggle="popover" data-html="true" data-content=${data_content}>${res[1]}</div>`);
                         } else {
-                            $(`#${date_list[i]}`).after(`<div class="event event-start event-end" data-span="${res[0]}" data-toggle="popover" data-html="true">${res[1]}</div>`);
+                            $(`#${date_list[i]}`).after(`<div class="event event-start event-end" data-span="${res[0]}" data-toggle="popover" data-html="true" data-content=${data_content}>${res[1]}</div>`);
                         }
                     }
                 })
             }
         }
+
+        $(function () {
+            $('[data-toggle="popover"]').popover().on('inserted.bs.popover')
+        });
+
+        // $('.week, .daily-calendar').click(function() {
+        //     $('#registerSchedule').modal('show');
+        // });
     }
 
     $('#todaymove').click(function() {
@@ -186,8 +225,10 @@ $(document).ready(function() {
         currentDate = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1)
         generateCalendar(currentDate);
     });
+
     generateCalendar(currentDate);
 });
+
 
 $(function () {
     $('[data-toggle="tooltip"]').tooltip()
@@ -195,14 +236,6 @@ $(function () {
 
 $(function () {
     $('#view li:first-child a').tab('show')
-});
-
-$(function () {
-    $('[data-toggle="popover"]').popover().on('inserted.bs.popover')
-});
-
-$('#div-list, .daily-calendar').click(function() {
-    $('#registerSchedule').modal('show');
 });
 
 $(".event-consecutive, .event, .event-repeated").click(function(event) {
