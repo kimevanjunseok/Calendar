@@ -7,11 +7,7 @@ from .models import Calendar
 # Create your views here.
 
 def index(request):
-    calendars = Calendar.objects.all()
-    context = {
-        'calendars': calendars,
-    } 
-    return render(request, 'index.html', context)
+    return render(request, 'index.html')
 
 def create(request):
     if request.method == "POST":

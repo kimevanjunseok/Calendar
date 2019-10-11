@@ -23,29 +23,6 @@ $(document).ready(async function() {
             }
         }
 
-        var d_startdate = {}
-        await all_DB.forEach(res => {
-            const start_d = res.start_day.split('-')
-            const end_d = res.end_day.split('-')
-            var judge
-            if (res.start_day === res.end_day) {
-                judge = false
-            } else {
-                judge = true
-            }
-
-            const diff_date1 = new Date(start_d[2], start_d[0]-1, start_d[1])
-            const diff_date2 = new Date(end_d[2], end_d[0]-1, end_d[1])
-            const diff = Math.floor((diff_date2.getTime() - diff_date1.getTime()) / 1000 / 60 / 60 / 24)
-
-            if (res.start_day in d_startdate) {
-                d_startdate[res.start_day].push([diff+1, res.title, diff_date1.getDay(), false, `${diff_date1.getFullYear() + '년' + ' ' + (diff_date1.getMonth()+1) + '월' + ' ' + diff_date1.getDate() + '일'}`, `${diff_date2.getFullYear() + '년' + ' ' + (diff_date2.getMonth()+1) + '월' + ' ' + diff_date2.getDate() + '일'}`, res.start_time, res.end_time, res.content, judge])
-            } else [
-                d_startdate[res.start_day] = [[diff+1, res.title, diff_date1.getDay(), false, `${diff_date1.getFullYear() + '년' + ' ' + (diff_date1.getMonth()+1) + '월' + ' ' + diff_date1.getDate() + '일'}`, `${diff_date2.getFullYear() + '년' + ' ' + (diff_date2.getMonth()+1) + '월' + ' ' + diff_date2.getDate() + '일'}`, res.start_time, res.end_time, res.content, judge]]
-            ]
-
-        })
-
         Date.prototype.monthDays = function() {
             var d = new Date(this.getFullYear(), this.getMonth() + 1, 0);
             return d.getDate();
@@ -120,18 +97,33 @@ $(document).ready(async function() {
             return a.concat(b);
         }, []).join('');
 
+        var d_startdate = {}
         await all_DB.forEach(res => {
             const s_day_0 = res.start_day.split('-')
             const s_day = date_list[0].split('-')
             const e_day_0 = res.end_day.split('-')
             const e_day = date_list[date_list.length - 1].split('-')
 
+            var judge
+            if (res.start_day === res.end_day) {
+                judge = false
+            } else {
+                judge = true
+            }
+
             const diff_d0 = new Date(s_day_0[2], s_day_0[0]-1, s_day_0[1])
             const diff_d1 = new Date(s_day[2], s_day[0]-1, s_day[1])
             const diff_d2 = new Date(e_day_0[2], e_day_0[0]-1, e_day_0[1])
             const diff_d3 = new Date(e_day[2], e_day[0]-1, Number(e_day[1])+1)
-
+            
+            const diff = Math.floor((diff_d2.getTime() - diff_d0.getTime()) / 1000 / 60 / 60 / 24)
             const diff_v = Math.floor((diff_d2.getTime() - diff_d1.getTime()) / 1000 / 60 / 60 / 24)
+
+            if (res.start_day in d_startdate) {
+                d_startdate[res.start_day].push([diff+1, res.title, diff_d0.getDay(), false, `${diff_d0.getFullYear() + '년' + ' ' + (diff_d0.getMonth()+1) + '월' + ' ' + diff_d0.getDate() + '일'}`, `${diff_d2.getFullYear() + '년' + ' ' + (diff_d2.getMonth()+1) + '월' + ' ' + diff_d2.getDate() + '일'}`, res.start_time, res.end_time, res.content, judge])
+            } else {
+                d_startdate[res.start_day] = [[diff+1, res.title, diff_d0.getDay(), false, `${diff_d0.getFullYear() + '년' + ' ' + (diff_d0.getMonth()+1) + '월' + ' ' + diff_d0.getDate() + '일'}`, `${diff_d2.getFullYear() + '년' + ' ' + (diff_d2.getMonth()+1) + '월' + ' ' + diff_d2.getDate() + '일'}`, res.start_time, res.end_time, res.content, judge]]
+            }
 
             if (!date_list.includes(res.start_day) && date_list.includes(res.end_day)) {
                 if (date_list[0] in d_startdate) {
@@ -358,6 +350,7 @@ $(document).ready(async function() {
             generateCalendar(currentDate)
         }
     });
+
     $('#right').click(function(e) {
         $('#div-list').text('');
         $('#day').text('');
