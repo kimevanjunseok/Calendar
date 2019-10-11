@@ -28,7 +28,6 @@ def create(request):
         if not end_time:
             end_time = '하루종일'
             
-
         calendars = Calendar(title=title, content=content, start_day=start_day, end_day=end_day, start_time=start_time, end_time=end_time)
 
         calendars.save()

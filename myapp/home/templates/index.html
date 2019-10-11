@@ -45,13 +45,14 @@
             </ul>
         </div>
         <div class="tab-content">
+            <!-- 달 일정 -->
             <div class="tab-pane active show" id="month" role="tabpanel" aria-labelledby="tab-month">
                 <div class="monthly-calendar">
                     <div id="div-list"></div>
                 </div>
             </div>
-            <div class="tab-pane" id="day" role="tabpanel" aria-labelledby="tab-day">
-            </div>
+            <!-- 일 일정 -->
+            <div class="tab-pane" id="day" role="tabpanel" aria-labelledby="tab-day"></div>
         </div>
     </div>
 
@@ -65,6 +66,7 @@
     <script type="text/javascript" src="{% static 'js/index.js' %}"></script>
 
 </body>
+<!-- modal 폼 작성 -->
 <div class="modal fade" id="registerSchedule" tabindex="-1" role="dialog" aria-labelledby="registerScheduleLabel"
         aria-hidden="true">
     <div class="modal-dialog" role="document">
@@ -149,10 +151,6 @@
                                 </div>
                             </div>
                         </div>
-                        <!-- <div class="form-check form-check-inline">
-                            <input class="form-check-input" type="checkbox" id="inlineCheckbox1" value="option1">
-                            <label class="form-check-label" for="inlineCheckbox1">매월 반복</label>
-                        </div> -->
                         <div class="form-check form-check-inline">
                             <input class="form-check-input" type="checkbox" id="inlineCheckbox2" name="inlineCheckbox2" value="option2">
                             <label class="form-check-label" for="inlineCheckbox2">하루 종일</label>
