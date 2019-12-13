@@ -1,4 +1,6 @@
 $(document).ready(async function() {
+    axios.defaults.xsrfCookieName = 'csrftoken'
+    axios.defaults.xsrfHeaderName = "X-CSRFTOKEN"
     // 현재날짜 저장
     var currentDate = new Date();
 
@@ -131,23 +133,23 @@ $(document).ready(async function() {
             const diff_v = Math.floor((diff_d2.getTime() - diff_d1.getTime()) / 1000 / 60 / 60 / 24)
             // DB에 있는 모든 일정 저장
             if (res.start_day in d_startdate) {
-                d_startdate[res.start_day].push([diff+1, res.title, diff_d0.getDay(), false, `${diff_d0.getFullYear() + '년' + ' ' + (diff_d0.getMonth()+1) + '월' + ' ' + diff_d0.getDate() + '일'}`, `${diff_d2.getFullYear() + '년' + ' ' + (diff_d2.getMonth()+1) + '월' + ' ' + diff_d2.getDate() + '일'}`, res.start_time, res.end_time, res.content, judge])
+                d_startdate[res.start_day].push([diff+1, res.title, diff_d0.getDay(), false, `${diff_d0.getFullYear() + '년' + ' ' + (diff_d0.getMonth()+1) + '월' + ' ' + diff_d0.getDate() + '일'}`, `${diff_d2.getFullYear() + '년' + ' ' + (diff_d2.getMonth()+1) + '월' + ' ' + diff_d2.getDate() + '일'}`, res.start_time, res.end_time, res.content, judge, res.id])
             } else {
-                d_startdate[res.start_day] = [[diff+1, res.title, diff_d0.getDay(), false, `${diff_d0.getFullYear() + '년' + ' ' + (diff_d0.getMonth()+1) + '월' + ' ' + diff_d0.getDate() + '일'}`, `${diff_d2.getFullYear() + '년' + ' ' + (diff_d2.getMonth()+1) + '월' + ' ' + diff_d2.getDate() + '일'}`, res.start_time, res.end_time, res.content, judge]]
+                d_startdate[res.start_day] = [[diff+1, res.title, diff_d0.getDay(), false, `${diff_d0.getFullYear() + '년' + ' ' + (diff_d0.getMonth()+1) + '월' + ' ' + diff_d0.getDate() + '일'}`, `${diff_d2.getFullYear() + '년' + ' ' + (diff_d2.getMonth()+1) + '월' + ' ' + diff_d2.getDate() + '일'}`, res.start_time, res.end_time, res.content, judge, res.id]]
             }
 
             // date_list에 시작날짜가 없어서 따로 저장하여 달력에 띄우기 위한 작업
             if (!date_list.includes(res.start_day) && date_list.includes(res.end_day)) {
                 if (date_list[0] in d_startdate) {
-                    d_startdate[date_list[0]].push([diff_v+1, res.title, diff_d1.getDay(), true, `${diff_d0.getFullYear() + '년' + ' ' + (diff_d0.getMonth()+1) + '월' + ' ' + diff_d0.getDate() + '일'}`, `${diff_d2.getFullYear() + '년' + ' ' + (diff_d2.getMonth()+1) + '월' + ' ' + diff_d2.getDate() + '일'}`, res.start_time, res.end_time, res.content, true])
+                    d_startdate[date_list[0]].push([diff_v+1, res.title, diff_d1.getDay(), true, `${diff_d0.getFullYear() + '년' + ' ' + (diff_d0.getMonth()+1) + '월' + ' ' + diff_d0.getDate() + '일'}`, `${diff_d2.getFullYear() + '년' + ' ' + (diff_d2.getMonth()+1) + '월' + ' ' + diff_d2.getDate() + '일'}`, res.start_time, res.end_time, res.content, true, res.id])
                 } else {
-                    d_startdate[date_list[0]] = [[diff_v+1, res.title, diff_d1.getDay(), true, `${diff_d0.getFullYear() + '년' + ' ' + (diff_d0.getMonth()+1) + '월' + ' ' + diff_d0.getDate() + '일'}`, `${diff_d2.getFullYear() + '년' + ' ' + (diff_d2.getMonth()+1) + '월' + ' ' + diff_d2.getDate() + '일'}`, res.start_time, res.end_time, res.content, true]]
+                    d_startdate[date_list[0]] = [[diff_v+1, res.title, diff_d1.getDay(), true, `${diff_d0.getFullYear() + '년' + ' ' + (diff_d0.getMonth()+1) + '월' + ' ' + diff_d0.getDate() + '일'}`, `${diff_d2.getFullYear() + '년' + ' ' + (diff_d2.getMonth()+1) + '월' + ' ' + diff_d2.getDate() + '일'}`, res.start_time, res.end_time, res.content, true, res.id]]
                 }
             } else if (diff_d0 < diff_d1 && diff_d3 < diff_d2 ) {
                 if (date_list[0] in d_startdate) {
-                    d_startdate[date_list[0]].push([36, res.title, diff_d1.getDay(), true, `${diff_d0.getFullYear() + '년' + ' ' + (diff_d0.getMonth()+1) + '월' + ' ' + diff_d0.getDate() + '일'}`, `${diff_d2.getFullYear() + '년' + ' ' + (diff_d2.getMonth()+1) + '월' + ' ' + diff_d2.getDate() + '일'}`, res.start_time, res.end_time, res.content, true])
+                    d_startdate[date_list[0]].push([36, res.title, diff_d1.getDay(), true, `${diff_d0.getFullYear() + '년' + ' ' + (diff_d0.getMonth()+1) + '월' + ' ' + diff_d0.getDate() + '일'}`, `${diff_d2.getFullYear() + '년' + ' ' + (diff_d2.getMonth()+1) + '월' + ' ' + diff_d2.getDate() + '일'}`, res.start_time, res.end_time, res.content, true, res.id])
                 } else {
-                    d_startdate[date_list[0]] = [[36, res.title, diff_d1.getDay(), true, `${diff_d0.getFullYear() + '년' + ' ' + (diff_d0.getMonth()+1) + '월' + ' ' + diff_d0.getDate() + '일'}`, `${diff_d2.getFullYear() + '년' + ' ' + (diff_d2.getMonth()+1) + '월' + ' ' + diff_d2.getDate() + '일'}`, res.start_time, res.end_time, res.content, true]]
+                    d_startdate[date_list[0]] = [[36, res.title, diff_d1.getDay(), true, `${diff_d0.getFullYear() + '년' + ' ' + (diff_d0.getMonth()+1) + '월' + ' ' + diff_d0.getDate() + '일'}`, `${diff_d2.getFullYear() + '년' + ' ' + (diff_d2.getMonth()+1) + '월' + ' ' + diff_d2.getDate() + '일'}`, res.start_time, res.end_time, res.content, true, res.id]]
                 }
             }
 
@@ -169,28 +171,30 @@ $(document).ready(async function() {
             if (date_list[i] in d_startdate) {
                 d_startdate[date_list[i]].forEach(res => {
                     var data_content_consecutive = `'<div class="content-line">
-                                            <div class="event-consecutive-marking">
-                                            </div>
-                                            <div class="title">
-                                                <h5>${res[1]}</h5>
-                                                <h6 class="reservation">
-                                                    ${res[4] + " " + "~" + " " + res[5]}
-                                                </h6>
-                                                <span class="reservation-time">
-                                                    ⋅${res[6] + "~" + res[7]}
-                                                </span>
-                                            </div>
-                                        </div>
-                                        <div class="content-line">
-                                            <i class="material-icons">
-                                                notes
-                                            </i>
-                                            <div class="title">
-                                                <h6 class="reservation">
-                                                    ${res[8]}
-                                                </h6>
-                                            </div>
-                                        </div>'`
+                                                        <div class="event-consecutive-marking">
+                                                        </div>
+                                                        <div class="title">
+                                                            <h5>${res[1]}</h5>
+                                                            <h6 class="reservation">
+                                                                ${res[4] + " " + "~" + " " + res[5]}
+                                                            </h6>
+                                                            <span class="reservation-time">
+                                                                ⋅${res[6] + "~" + res[7]}
+                                                            </span>
+                                                        </div>
+                                                    </div>
+                                                    <div class="content-line">
+                                                        <i class="material-icons">
+                                                            notes
+                                                        </i>
+                                                        <div class="title">
+                                                            <h6 class="reservation">
+                                                                ${res[8]}
+                                                            </h6>
+                                                        </div>
+                                                        <hr>
+                                                        <button type="button" class="btn btn-danger delete">삭제</button>
+                                                    </div>'`
                     var data_content = `'<div class="content-line">
                                             <div class="event-marking">
                                             </div>
@@ -270,16 +274,19 @@ $(document).ready(async function() {
                 })
             }
         }
+
         // 일정 클릭시 팝업으로 일정 상세내용이 나옴
         $(function () {
             $('[data-toggle="popover"]').popover().on('inserted.bs.popover')
         });
+
         // 달력클릭시 일정작성 폼이 나옴
         $('.week, .daily-calendar').click(function(e) {
             var cutdate = e.target.id.replaceAll('-', '/')
             $('[name=start_day]').val(cutdate)
             $('#registerSchedule').modal('show');
         });
+
         // 팝업 2개 이상 나오는 것을 막음
         $(".event-consecutive, .event, .event-repeated").click(function(event) {
             event.stopPropagation();
@@ -343,6 +350,20 @@ $(document).ready(async function() {
         today_schedule += '</div>'
         $('#day').append(today_schedule);
     }
+
+    // 일정 만들기 함수
+    $('#create').click(async function() {
+        const data = new FormData();
+        data.append('title', document.getElementById("recipient-name").value)
+        data.append('content', document.getElementById("message-text").value)
+        data.append('start_day', document.getElementById("start-day").value)
+        data.append('end_day', document.getElementById("end-day").value)
+        data.append('start_time', document.getElementById("start-time").value)
+        data.append('end_time', document.getElementById("end-time").value)
+        await axios.post('api/v1/calendar_create/', data)
+        window.location.href = '/calendar'
+    });
+
     // today클릭시 현재날짜로 이동
     $('#todaymove').click(function() {
         $('#div-list').text('');
@@ -350,6 +371,7 @@ $(document).ready(async function() {
         currentDate = new Date()
         generateCalendar(currentDate);
     });
+
     // 달, 일에 따라 날짜 이동
     $('#left').click(function() {
         $('#div-list').text('');

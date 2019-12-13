@@ -1,5 +1,5 @@
 from django.contrib import admin
-from myapp.home.models import Calendar
+from .models import Calendar
 
 # Register your models here.
 class CalendarAdmin(admin.ModelAdmin):
